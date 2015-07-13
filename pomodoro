@@ -1,0 +1,81 @@
+#!/bin/bash
+
+LOG="$HOME/.pomodoro.log"
+POMODORO_LENGTH=$[60*25]
+POMODORO_END_REMINDER=$[60*5]
+SHORT_BREAK_LENGTH=$[60*5]
+LONG_BREAK_LENGTH=$[60*20]
+
+function log {
+  echo "$(date "+%Y-%m-%d %H:%M:%S"),$1">>"$LOG"
+}
+
+function display_notification {
+  printf "%s: %s (%s)\n" "$1" "$2" $(date "+%H:%M:%S")
+  osascript -e "display notification \"$1\" with title \"Pomodoro\" subtitle \"$2\" sound name \"$3\""
+}
+
+function start_pomodoro {
+  trap "cancel_pomodoro \"$1\"" SIGHUP SIGINT SIGTERM
+  display_notification $1 "Started" "Pop"
+  log "STARTED,$1"
+  sleep $[$POMODORO_LENGTH-$POMODORO_END_REMINDER]
+  display_notification $1 "About to end" "Tink"
+  sleep $POMODORO_END_REMINDER
+  display_notification $1 "Finished" "Glass"
+  log "FINISH,$1"
+}
+
+function cancel_break {
+  display_notification "Break" "Canceled" "Basso"
+  log "BREAK_CANCELED"
+  exit 1
+}
+
+function cancel_pomodoro {
+  display_notification $1 "Canceled" "Basso"
+  log "CANCELED,$1"
+  exit 1
+}
+
+function short_break {
+  trap cancel_break SIGHUP SIGINT SIGTERM
+  log "SHORT_BREAK_START"
+  display_notification "Break" "Break started"
+  sleep $SHORT_BREAK_LENGTH
+  display_notification "Break" "Break finished" "Glass"
+  log "SHORT_BREAK_FINISH"
+  exit
+}
+
+function screen_saver_on {
+  osascript -e 'tell application "System Events" to start current screen saver'
+}
+
+function screen_saver_off {
+  osascript -e 'tell application "ScreenSaverEngine" to quit'
+}
+
+function long_break {
+  trap cancel_break SIGHUP SIGINT SIGTERM
+  log "LONG_BREAK_START"
+  display_notification "Break" "Long break started"
+  screen_saver_on
+  sleep $LONG_BREAK_LENGTH
+  display_notification "Break" "Long break finished" "Glass"
+  log "LONG_BREAK_FINISH"
+  screen_saver_off
+  exit
+}
+
+if [ "$1" == 'break' ]; then
+  short_break
+fi
+if [ "$1" == 'longbreak' ]; then
+  long_break
+fi
+if [ "$1" == 'log' ]; then
+  cat "$LOG"
+  exit
+fi
+start_pomodoro $1
