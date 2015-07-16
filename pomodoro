@@ -23,7 +23,7 @@ function start_pomodoro {
   sleep $[$POMODORO_LENGTH-$POMODORO_END_REMINDER]
   display_notification "$1" "About to end" "Tink"
   sleep $POMODORO_END_REMINDER
-  display_notification $1 "Finished" "Glass"
+  display_notification "$1" "Finished" "Glass"
   log "FINISH,$1"
 }
 
