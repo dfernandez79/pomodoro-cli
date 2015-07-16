@@ -17,10 +17,10 @@ function display_notification {
 
 function start_pomodoro {
   trap "cancel_pomodoro \"$1\"" SIGHUP SIGINT SIGTERM
-  display_notification $1 "Started" "Pop"
+  display_notification "$1" "Started" "Pop"
   log "STARTED,$1"
   sleep $[$POMODORO_LENGTH-$POMODORO_END_REMINDER]
-  display_notification $1 "About to end" "Tink"
+  display_notification "$1" "About to end" "Tink"
   sleep $POMODORO_END_REMINDER
   display_notification $1 "Finished" "Glass"
   log "FINISH,$1"
@@ -33,7 +33,7 @@ function cancel_break {
 }
 
 function cancel_pomodoro {
-  display_notification $1 "Canceled" "Basso"
+  display_notification "$1" "Canceled" "Basso"
   log "CANCELED,$1"
   exit 1
 }
@@ -78,4 +78,4 @@ if [ "$1" == 'log' ]; then
   cat "$LOG"
   exit
 fi
-start_pomodoro $1
+start_pomodoro "$1"
