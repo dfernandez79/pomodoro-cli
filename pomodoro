@@ -11,13 +11,14 @@ function log {
 }
 
 function display_notification {
-  printf "%s: %s (%s)\n" "$1" "$2" $(date "+%H:%M:%S")
+  printf "%s - %s (%s)\n" $(date "+%H:%M") "$1" "$2"
   osascript -e "display notification \"$1\" with title \"Pomodoro\" subtitle \"$2\" sound name \"$3\""
 }
 
 function start_pomodoro {
   trap "cancel_pomodoro \"$1\"" SIGHUP SIGINT SIGTERM
-  display_notification "$1" "Started" "Pop"
+  END_TIME=$(date -v +${POMODORO_LENGTH}S "+%H:%M")
+  display_notification "$1 (Ends at $END_TIME)" "Started" "Pop"
   log "STARTED,$1"
   sleep $[$POMODORO_LENGTH-$POMODORO_END_REMINDER]
   display_notification "$1" "About to end" "Tink"
