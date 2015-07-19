@@ -1,6 +1,6 @@
 # Another Pomodoro Timer shell script
 
-Stop looking for a Pomodoro Timer application, if you have a Unix-like shell you can hack one in one line:
+Stop looking for a Pomodoro Timer application, if you have a Unix-like shell you can hack one in one shell line:
 
 ```sh
 sleep $[60*25]; echo "Pomodoro Finished!"
@@ -8,7 +8,7 @@ sleep $[60*25]; echo "Pomodoro Finished!"
 
 This script is based on that simple idea but adds a few features:
 * Logs the pomodoro events to `$HOME/.pomodoro.log` so you can create nice work statistics.
-* Uses the OSX notification center to inform about the pomodoro start, 5 mins before end, and the end.
+* Uses the OSX notification center to inform about the pomodoro at start, 5 mins before the end, and at the end.
 * Catches the Ctrl-C signal to cancel the pomodoro.
 * Executes the screen saver for long breaks.
 
